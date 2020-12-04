@@ -18,40 +18,46 @@ public class SeamCarver {
             this.weight = carver.energy(x,y);
         }
 
-        ArrayList<SearchNode> adj(Direction dir)
+        Iterable<SearchNode> adj(Direction dir)
         {
+            if(dir == Direction.Vertical)
+                return getVerticalSearchNodes();
+            else
+                return getHorizontalSearchNodes();
+        }
+
+        private Iterable<SearchNode> getHorizontalSearchNodes() {
             ArrayList<SearchNode> list = new ArrayList<>(3);
 
-            if(dir == Direction.Vertical)
-            {
-                if(y >= carver.height() - 1)
-                    return list;
-
-                if(x > 0)
-                    list.add(new SearchNode(carver, x - 1, y + 1));
-
-                list.add(new SearchNode(carver, x, y + 1));
-
-                if(x < carver.width() - 1)
-                    list.add(new SearchNode(carver, x + 1, y + 1));
-
+            if(x >= carver.width() - 1)
                 return list;
-            }
-            else
-            {
-                if(x >= carver.width() - 1)
-                    return list;
 
-                if(y > 0)
-                    list.add(new SearchNode(carver, x + 1, y - 1));
+            if(y > 0)
+                list.add(new SearchNode(carver, x + 1, y - 1));
 
-                list.add(new SearchNode(carver, x + 1, y));
+            list.add(new SearchNode(carver, x + 1, y));
 
-                if(y < carver.height() - 1)
-                    list.add(new SearchNode(carver, x + 1, y + 1));
+            if(y < carver.height() - 1)
+                list.add(new SearchNode(carver, x + 1, y + 1));
 
+            return list;
+        }
+
+        private Iterable<SearchNode> getVerticalSearchNodes() {
+            ArrayList<SearchNode> list = new ArrayList<>(3);
+
+            if(y >= carver.height() - 1)
                 return list;
-            }
+
+            if(x > 0)
+                list.add(new SearchNode(carver, x - 1, y + 1));
+
+            list.add(new SearchNode(carver, x, y + 1));
+
+            if(x < carver.width() - 1)
+                list.add(new SearchNode(carver, x + 1, y + 1));
+
+            return list;
         }
     }
 
@@ -63,12 +69,22 @@ public class SeamCarver {
     private Picture m_picture;
     private int[][] m_edgeTo;
     private double[][] m_distanceTo;
+    private double[][] m_energyCache;
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture){
         if(picture == null)
             throw new IllegalArgumentException();
         m_picture = new Picture(picture);
+        initializeEnergyCache();
+    }
+
+    private void initializeEnergyCache() {
+        m_energyCache = new double[width()][height()];
+
+        for(int x = 0 ; x < width(); x++)
+            for(int y = 0; y < height(); y++)
+                m_energyCache[x][y] = Double.POSITIVE_INFINITY;
     }
 
     // current picture
@@ -94,6 +110,9 @@ public class SeamCarver {
             || y == 0 || y == height() -1)
             return 1000; //higher than any other pixel
 
+        if(m_energyCache[x][y] != Double.POSITIVE_INFINITY)
+            return m_energyCache[x][y];
+
         Color p_left = m_picture.get(x - 1, y);
         Color p_right = m_picture.get(x + 1, y);
         Color p_top = m_picture.get(x, y - 1);
@@ -109,7 +128,9 @@ public class SeamCarver {
                 square((p_top.getBlue() - p_bottom.getBlue()))+
                 square((p_top.getGreen() - p_bottom.getGreen()));
 
-        return Math.sqrt(gradXSquared + gradYSquared);
+        double energy = Math.sqrt(gradXSquared + gradYSquared);
+        m_energyCache[x][y] = energy;
+        return energy;
     }
 
     private void validatePixel(int x, int y) {
@@ -277,6 +298,7 @@ public class SeamCarver {
             }
         }
         m_picture = picture;
+        initializeEnergyCache();
     }
 
     private void validateSeam(Direction dir, int[] seam) {
@@ -312,11 +334,12 @@ public class SeamCarver {
             }
         }
         m_picture = picture;
+        initializeEnergyCache();
     }
 
     //  unit testing (optional)
     public static void main(String[] args){
-        Picture p = new Picture("4x6.png");
+        Picture p = new Picture("chameleon.png");
         SeamCarver s = new SeamCarver(p);
         int[] x = s.findHorizontalSeam();
         int[] y = s.findVerticalSeam();
