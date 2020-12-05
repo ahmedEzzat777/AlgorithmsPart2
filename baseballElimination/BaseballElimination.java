@@ -17,14 +17,14 @@ public class BaseballElimination {
 
     private class Solution
     {
-        int InputFlow;
+        int InputCapacity;
         FordFulkerson FF;
         boolean TriviallyEliminated = false;
         int TriviallyEliminatedIdx = -1;
 
-        Solution(int inputFlow,
+        Solution(int inputCapacity,
                  FordFulkerson ff){
-            this.InputFlow = inputFlow;
+            this.InputCapacity = inputCapacity;
             this.FF = ff;
         }
 
@@ -130,7 +130,7 @@ public class BaseballElimination {
             return true;
 
         double maxFlow = solution.FF.value();
-        return solution.InputFlow != maxFlow;
+        return solution.InputCapacity != maxFlow;
     }
 
     public Iterable<String> certificateOfElimination(String team)  // subset R of teams that eliminates given team; null if not eliminated
@@ -171,7 +171,7 @@ public class BaseballElimination {
 
         FlowNetwork network = new FlowNetwork(numberOfGraphVertices);
         int gameCounter = 0;
-        int inputFlow = 0;
+        int inputCapacity = 0;
 
         for (int i = 0; i < m_n; i++)
         {
@@ -189,15 +189,15 @@ public class BaseballElimination {
                 network.addEdge(new FlowEdge(s, m_n + gameCounter, inValidPath ? 0 : m_games[i][j]));
                 network.addEdge(new FlowEdge(m_n + gameCounter, i, inValidPath ? 0 : Double.POSITIVE_INFINITY));
                 network.addEdge(new FlowEdge(m_n + gameCounter, j, inValidPath ? 0 : Double.POSITIVE_INFINITY));
-                inputFlow += i==teamIdx || j==teamIdx? 0 : m_games[i][j];
+                inputCapacity += i==teamIdx || j==teamIdx? 0 : m_games[i][j];
                 gameCounter++;
             }
         }
-        return new Solution(inputFlow, new FordFulkerson(network, s, t));
+        return new Solution(inputCapacity, new FordFulkerson(network, s, t));
     }
 
     public static void main(String[] args) {
-        BaseballElimination division = new BaseballElimination(args[0]);
+        BaseballElimination division = new BaseballElimination("teams12.txt");
         for (String team : division.teams()) {
             if (division.isEliminated(team)) {
                 StdOut.print(team + " is eliminated by the subset R = { ");
