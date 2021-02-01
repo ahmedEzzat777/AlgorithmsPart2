@@ -4,8 +4,8 @@
 <ul>
 <li>Wordnet: https://coursera.cs.princeton.edu/algs4/assignments/wordnet/specification.php</li>
 <li>Seam Carving: https://coursera.cs.princeton.edu/algs4/assignments/seam/specification.php</li>
-<li>Baseball Elimination: https://www.coursera.org/learn/algorithms-part2/programming/hmYRI/baseball-elimination</li>
-<li>Boggle: https://www.coursera.org/learn/algorithms-part2/programming/9GqJs/boggle</li>
-<li>Burrows–Wheeler: https://www.coursera.org/learn/algorithms-part2/programming/3nmSB/burrows-wheeler</li>
+<li>Baseball Elimination: https://coursera.cs.princeton.edu/algs4/assignments/baseball/specification.php</li>
+<li>Boggle: https://coursera.cs.princeton.edu/algs4/assignments/boggle/specification.php</li>
+<li>Burrows–Wheeler: https://coursera.cs.princeton.edu/algs4/assignments/burrows/specification.php</li>
 </ul>
 
